@@ -12,7 +12,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>D:\Projects\LengthTools\bin\</OutputPath>
+		<OutputPath>../int</OutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -23,6 +23,10 @@
 	  <None Update="hello.len">
 	    <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.DotNet.ILCompiler" Version="6.0.0-alpha.1.21059.2" />
 	</ItemGroup>
 
 </Project>

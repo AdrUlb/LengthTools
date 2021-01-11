@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace LengthTools.Common
 {
@@ -22,7 +20,7 @@ namespace LengthTools.Common
 			{ 25, ("push", 1) },
 		};
 
-		static readonly IReadOnlyDictionary<string, int> byteCode = new Dictionary<string, int>()
+		static readonly IReadOnlyDictionary<string, byte> byteCode = new Dictionary<string, byte>()
 		{
 			{ "inp", 0 },
 			{ "add", 1 },
@@ -89,7 +87,10 @@ namespace LengthTools.Common
 				var inst = noArgs ? line : line.Substring(0, line.IndexOf(' '));
 				var args = noArgs ? Array.Empty<string>() : line[line.IndexOf(' ')..].Split(',');
 
-				Console.WriteLine(inst);
+				bytes.Add(byteCode[inst]);
+
+				foreach (var arg in args)
+					bytes.Add(byte.Parse(arg));
 			}
 
 			return bytes.ToArray();

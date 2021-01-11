@@ -1,25 +1,28 @@
 ﻿using LengthTools.Common;
 using System;
+using System.Buffers.Binary;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace LengthTools
 {
 	class Program
 	{
-		public static readonly string? AsmPath = Process.GetCurrentProcess().MainModule?.FileName;
-		public static readonly string? AsmName = Path.GetFileName(AsmPath ?? "{assembly path here}");
-
-		public static readonly FileVersionInfo? info = AsmPath == null ? null : FileVersionInfo.GetVersionInfo(AsmPath);
-		public static readonly string Name = info?.ProductName ?? "{Product name here}";
-		public static readonly string Version = info?.ProductVersion ?? "{Product version here}";
-		public static readonly string Copyright = info?.LegalCopyright ?? "{Copyright string here}";
+		static readonly string? asmPath = Process.GetCurrentProcess().MainModule?.FileName;
+		static readonly string? asmName = Path.GetFileName(asmPath ?? "{assembly path here}");
+		static readonly string? asmDir = Path.GetDirectoryName(asmPath);
+		
+		public static readonly FileVersionInfo? info = asmPath == null ? null : FileVersionInfo.GetVersionInfo(asmPath);
+		public static readonly string name = info?.ProductName ?? "{Product name here}";
+		public static readonly string version = info?.ProductVersion ?? "{Product version here}";
+		public static readonly string copyright = info?.LegalCopyright ?? "{Copyright string here}";
 
 		public static readonly ConsoleColor errorColor = ConsoleColor.Red;
 
 		static void FatalError(string error)
 		{
-			Console.Write($"{AsmName}: ");
+			Console.Write($"{asmName}: ");
 			var normalColor = Console.ForegroundColor;
 			Console.ForegroundColor = errorColor;
 			Console.Write("fatal error: ");
@@ -31,7 +34,7 @@ namespace LengthTools
 
 		static void Error(string error)
 		{
-			Console.Write($"{AsmName}: ");
+			Console.Write($"{asmName}: ");
 			var normalColor = Console.ForegroundColor;
 			Console.ForegroundColor = errorColor;
 			Console.Write("error: ");
@@ -56,7 +59,7 @@ namespace LengthTools
 
 			CommandLineParser parser = new CommandLineParser(args, knownOptions, knownOptionlessArgs, 1);
 
-			var usageStr = parser.GenerateUsageString(AsmName!);
+			var usageStr = parser.GenerateUsageString(asmName!);
 			var helpStr = parser.GenerateHelpString(25);
 
 			string? outputFile = null;
@@ -74,8 +77,8 @@ namespace LengthTools
 						Environment.Exit(0);
 						break;
 					case "version":
-						Console.WriteLine($"{Name} {Version}");
-						Console.WriteLine(Copyright);
+						Console.WriteLine($"{name} {version}");
+						Console.WriteLine(copyright);
 						Environment.Exit(0);
 						break;
 					case "output":
@@ -138,6 +141,30 @@ namespace LengthTools
 				File.WriteAllLines(outputFile, il); 
 				Environment.Exit(0);
 			}
+
+			var byteCode = LengthCompiler.IntermediateToByteCode(il);
+
+			string runtimeBin = "";
+			if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+				runtimeBin = Path.Join(asmDir, "lengthrt.exe");
+			else
+				FatalError("compilation to native binary not supported on this platform");
+
+			if (!File.Exists(runtimeBin))
+				FatalError("runtime binary missing");
+
+			File.Copy(runtimeBin, outputFile, true);
+
+			using var fs = new FileStream(outputFile, FileMode.Append);
+
+			foreach (var b in byteCode)
+				fs.Write(byteCode, 0, byteCode.Length);
+
+			Span<byte> lengthBytes = stackalloc byte[4];
+
+			BinaryPrimitives.WriteInt32BigEndian(lengthBytes, byteCode.Length);
+			fs.Write(lengthBytes);
+			fs.WriteByte(0xAB);
 		}
 	}
 }

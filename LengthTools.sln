@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LengthTools.Compiler", "Len
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LengthTools.Common", "LengthTools.Common\LengthTools.Common.csproj", "{E0A5CC6F-4643-41BA-B7AD-E76AB2D36CDC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LengthTools.Runtime", "LengthTools.Runtime\LengthTools.Runtime.csproj", "{F7F4D00D-64B8-47C7-98A7-C5F450734EA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{E0A5CC6F-4643-41BA-B7AD-E76AB2D36CDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E0A5CC6F-4643-41BA-B7AD-E76AB2D36CDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E0A5CC6F-4643-41BA-B7AD-E76AB2D36CDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F7F4D00D-64B8-47C7-98A7-C5F450734EA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F7F4D00D-64B8-47C7-98A7-C5F450734EA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F7F4D00D-64B8-47C7-98A7-C5F450734EA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F7F4D00D-64B8-47C7-98A7-C5F450734EA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
