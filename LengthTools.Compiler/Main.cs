@@ -128,6 +128,16 @@ namespace LengthTools
 			{
 				FatalError("target directory does not exist");
 			}
+
+			var lines = File.ReadAllLines(inputFile);
+
+			var il = LengthCompiler.LengthToIntermediate(lines);
+
+			if (argIl)
+			{
+				File.WriteAllLines(outputFile, il); 
+				Environment.Exit(0);
+			}
 		}
 	}
 }

@@ -10,4 +10,8 @@
 		<OutputPath>D:\Projects\LengthTools\bin\</OutputPath>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <Folder Include="runtime\" />
+	</ItemGroup>
+
 </Project>

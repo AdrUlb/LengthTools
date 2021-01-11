@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -16,7 +16,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\LengthTools.Common\LengthTools.Common.csproj" />
+	  <ProjectReference Include="..\LengthTools.Common\LengthTools.Common.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

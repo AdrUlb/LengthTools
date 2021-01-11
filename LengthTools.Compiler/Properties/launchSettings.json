@@ -2,7 +2,7 @@
   "profiles": {
     "LengthTools.Compiler": {
       "commandName": "Project",
-      "commandLineArgs": "hello.len --il --output out.lil"
+      "commandLineArgs": "hello.len --output out.cs"
     }
   }
 }
