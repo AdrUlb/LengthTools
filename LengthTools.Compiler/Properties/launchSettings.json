@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "LengthTools.Compiler": {
+      "commandName": "Project",
+      "commandLineArgs": "hello.len --il --output out.lil"
+    }
+  }
+}
