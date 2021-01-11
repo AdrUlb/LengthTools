@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Buffers.Binary;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace LengthTools.Common
 {
 	public static class LengthCompiler
 	{
-		static readonly IReadOnlyDictionary<int, (string, int)> instructionSet = new Dictionary<int, (string, int)>()
+		public static readonly IReadOnlyDictionary<int, (string, int)> instructionSet = new Dictionary<int, (string, int)>()
 		{
 			{ 9, ("inp", 0) },
 			{ 10, ("add", 0) },
@@ -20,21 +22,6 @@ namespace LengthTools.Common
 			{ 25, ("push", 1) },
 		};
 
-		static readonly IReadOnlyDictionary<string, byte> byteCode = new Dictionary<string, byte>()
-		{
-			{ "inp", 0 },
-			{ "add", 1 },
-			{ "sub", 2 },
-			{ "dup", 3 },
-			{ "cond", 4 },
-			{ "gotou", 5 },
-			{ "outn", 6 },
-			{ "outa", 7 },
-			{ "mul", 8 },
-			{ "div", 9 },
-			{ "push", 10 },
-		};
-
 		public static string[] LengthToIntermediate(string[] code)
 		{
 			Span<int> lengths = stackalloc int[code.Length];
@@ -46,8 +33,11 @@ namespace LengthTools.Common
 
 			for (var i = 0; i < lengths.Length; i++)
 			{
+				if (lengths[i] == 0)
+					continue;
+
 				if (!instructionSet.ContainsKey(lengths[i]))
-					throw new Exception();
+					throw new Exception($"Unknown length {i}");
 
 				(string instruction, int argCount) = instructionSet[lengths[i]];
 
@@ -77,9 +67,9 @@ namespace LengthTools.Common
 
 		public static byte[] IntermediateToByteCode(string[] code)
 		{
-			List<byte> bytes = new List<byte>();
+			var bytes = new List<byte>();
 
-			List<string> usedInstructions = new List<string>();
+			Span<byte> intBytes = stackalloc byte[4];
 
 			foreach (var line in code)
 			{
@@ -87,10 +77,28 @@ namespace LengthTools.Common
 				var inst = noArgs ? line : line.Substring(0, line.IndexOf(' '));
 				var args = noArgs ? Array.Empty<string>() : line[line.IndexOf(' ')..].Split(',');
 
-				bytes.Add(byteCode[inst]);
+				for (var i = 0; i < instructionSet.Count; i++)
+				{
+					var item = instructionSet.ElementAt(i);
+
+					if (item.Value.Item1 == inst)
+					{
+						BinaryPrimitives.WriteInt32BigEndian(intBytes, item.Key);
+
+						foreach (var b in intBytes)
+							bytes.Add(b);
+
+						break;
+					}
+				}
 
 				foreach (var arg in args)
-					bytes.Add(byte.Parse(arg));
+				{
+					BinaryPrimitives.WriteInt32BigEndian(intBytes, int.Parse(arg));
+
+					foreach (var b in intBytes)
+						bytes.Add(b);
+				}
 			}
 
 			return bytes.ToArray();

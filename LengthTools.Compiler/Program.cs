@@ -94,7 +94,7 @@ namespace LengthTools
 						Environment.Exit(-1);
 						break;
 					default:
-						FatalError("unknown option: {option}");
+						FatalError($"unknown option: {option}");
 						Environment.Exit(-1);
 						break;
 				}

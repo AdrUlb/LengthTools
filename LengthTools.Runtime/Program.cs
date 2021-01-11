@@ -22,15 +22,19 @@ namespace LengthTools.Runtime
 				Environment.Exit(0);
 
 			fs.Position = fs.Length - 5;
-			Span<byte> lengthBytes = stackalloc byte[4];
-			fs.Read(lengthBytes);
-			var length = BinaryPrimitives.ReadInt32BigEndian(lengthBytes);
+			Span<byte> intBytes = stackalloc byte[4];
+			fs.Read(intBytes);
+			var length = BinaryPrimitives.ReadInt32BigEndian(intBytes);
 
 			Span<int> ops = stackalloc int[length];
 
+
 			fs.Position = fs.Length - 5 - length;
-			for (var i = 0; i < length; i++)
-				ops[i] = fs.ReadByte();
+			for (var i = 0; i < length / 4; i++)
+			{
+				fs.Read(intBytes);
+				ops[i] = BinaryPrimitives.ReadInt32BigEndian(intBytes);
+			}
 
 			var stack = new Stack<int>();
 
@@ -38,10 +42,12 @@ namespace LengthTools.Runtime
 			{
 				switch (ops[i])
 				{
-					case 0: // inp - put byte from stdin on the stack
-						Console.WriteLine("inp");
+					case 9: // inp - put byte from stdin on the stack
+						{
+							stack.Push(Console.ReadKey(true).KeyChar);
+						}
 						break;
-					case 1: // add - add top two values on the stack and push the result
+					case 10: // add - add top two values on the stack and push the result
 						{
 							if (stack.Count < 2)
 								throw new Exception("Stack underflow");
@@ -51,7 +57,7 @@ namespace LengthTools.Runtime
 							stack.Push(val1 + val2);
 						}
 						break;
-					case 2: // sub - subtract the top two values on the stack and push the result
+					case 11: // sub - subtract the top two values on the stack and push the result
 						{
 							if (stack.Count < 2)
 								throw new Exception("Stack underflow");
@@ -61,7 +67,7 @@ namespace LengthTools.Runtime
 							stack.Push(val2 - val1);
 						}
 						break;
-					case 3: // dup - duplicate top value on the stack
+					case 12: // dup - duplicate top value on the stack
 						{
 							if (stack.Count < 1)
 								throw new Exception("Stack underflow");
@@ -69,21 +75,40 @@ namespace LengthTools.Runtime
 							stack.Push(stack.Peek());
 						}
 						break;
-					case 4: // cond - skip next instruction if the top value on the stack is 0 and pop that value
-						Console.WriteLine("cond");
-						break;
-					case 5: // gotou - set program counter to next byte
-						Console.WriteLine("gotou");
-						break;
-					case 6: // outn - pop stack output as number
-						Console.WriteLine("outn");
-						break;
-					case 7: // outa - pop stack output as ascii
+					case 13: // cond - skip next instruction if the top value on the stack is 0 and pop that value
 						{
+							if (stack.Count < 1)
+								throw new Exception("Stack underflow");
+
+							if (stack.Pop() == 0)
+							{
+								i++;
+								i += LengthTools.Common.LengthCompiler.instructionSet[ops[i]].Item2;
+							}
+						}
+						break;
+					case 14: // gotou - set program counter to next byte
+						{
+							i = ops[i + 1] - 1;
+						}
+						break;
+					case 15: // outn - pop stack output as number
+						{
+							if (stack.Count < 1)
+								throw new Exception("Stack underflow");
+
+							Console.Write(stack.Pop());
+						}
+						break;
+					case 16: // outa - pop stack output as ascii
+						{
+							if (stack.Count < 1)
+								throw new Exception("Stack underflow");
+
 							Console.Write((char)stack.Pop());
 						}
 						break;
-					case 8: // mul - multiplay the top two values on the stack and push the result
+					case 20: // mul - multiplay the top two values on the stack and push the result
 						{
 							if (stack.Count < 2)
 								throw new Exception("Stack underflow");
@@ -93,7 +118,7 @@ namespace LengthTools.Runtime
 							stack.Push(val1 * val2);
 						}
 						break;
-					case 9: // div - divide the top two values on the stack and push the result
+					case 21: // div - divide the top two values on the stack and push the result
 						{
 							if (stack.Count < 2)
 								throw new Exception("Stack underflow");
@@ -103,7 +128,7 @@ namespace LengthTools.Runtime
 							stack.Push(val2 / val1);
 						}
 						break;
-					case 10: // push - push value onto the stack
+					case 25: // push - push value onto the stack
 						i++;
 						stack.Push(ops[i]);
 						break;
