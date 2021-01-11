@@ -7,6 +7,16 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<IlcInvariantGlobalization>true</IlcInvariantGlobalization>
+		<RootAllApplicationAssemblies>false</RootAllApplicationAssemblies>
+		<IlcGenerateCompleteTypeMetadata>false</IlcGenerateCompleteTypeMetadata>
+		<IlcGenerateStackTraceData>false</IlcGenerateStackTraceData>
+		<IlcDisableReflection>true</IlcDisableReflection>
+		<IlcOptimizationPreference>Size</IlcOptimizationPreference>
+		<IlcDisableUnhandledExceptionExperience>true</IlcDisableUnhandledExceptionExperience>
+	</PropertyGroup>
+	
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 	  <OutputPath>../bin</OutputPath>
 	</PropertyGroup>
