@@ -1,2 +1,2 @@
 # LengthTools
-Toolchain for the esoteric programming language "Length" by Nailuj29
+Toolchain for the esoteric programming language "Length" by nailuj29
